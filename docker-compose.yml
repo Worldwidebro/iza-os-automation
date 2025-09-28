@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  iza-os-automation:
+    build: .
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - REPO_NAME=iza-os-automation
+      - ORGANIZATION=Worldwidebro
+      - DATABASE_URL=postgresql://user:pass@db:5432/iza-os-automation
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    depends_on:
+      - db
+    networks:
+      - billionaire-empire
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=iza-os-automation
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - billionaire-empire
+
+  redis:
+    image: redis:7-alpine
+    networks:
+      - billionaire-empire
+
+volumes:
+  postgres_data:
+
+networks:
+  billionaire-empire:
+    driver: bridge
